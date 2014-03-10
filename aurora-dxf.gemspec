@@ -3,20 +3,20 @@ lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |gem|
-  gem.name          = "dxf"
+  gem.name          = "aurora-dxf"
   gem.version       = '0.2'
-  gem.authors       = ["Brandon Fosdick"]
-  gem.email         = ["bfoz@bfoz.net"]
+  gem.authors       = ["Meseker Yohannes"]
+  gem.email         = ["meseker.yohannes@gmail.com"]
   gem.description   = %q{Read and write DXF files using Ruby}
   gem.summary       = %q{Tools for working with the popular DXF file format}
-  gem.homepage      = "http://github.com/bfoz/ruby-dxf"
+  gem.homepage      = "http://github.com/meseker/dxf-ruby"
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
-    gem.add_dependency	'geometry', '~> 6'
+    gem.add_dependency	'aurora-geometry', '~> 6'
     gem.add_dependency  'sketch', '~> 0.1'
     gem.add_dependency	'units', '~> 2.2'
 end
