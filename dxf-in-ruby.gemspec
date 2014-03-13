@@ -18,5 +18,4 @@ Gem::Specification.new do |gem|
     
     gem.add_dependency  'geometry-in-ruby'
     gem.add_dependency  'sketch-in-ruby'
-    gem.add_dependency	'units', '~> 2.2'
 end
