@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 gemspec
 
-gem 'sketch', github: 'bfoz/sketch'
+gem 'sketch-in-ruby'
 gem 'units', github: 'bfoz/units-ruby'
 
 group :test do

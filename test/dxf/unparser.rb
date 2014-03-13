@@ -1,5 +1,5 @@
 require 'minitest/autorun'
-require 'dxf'
+require_relative '../../lib/dxf'
 
 describe DXF::Unparser do
     subject { DXF::Unparser.new }
