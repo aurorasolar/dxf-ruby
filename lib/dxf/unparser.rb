@@ -33,7 +33,6 @@ module DXF
 			21, format_value(last.y)]
 			group_code.concat [62, options[:color]] if options[:color]
 			group_code.concat [280, 5] if options[:dashed]
-			group
 			group_code
 		end
 	# @endgroup
