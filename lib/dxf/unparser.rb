@@ -52,31 +52,44 @@ module DXF
 		# Convert the given value to the correct units and return it as a formatted string
 		# @return [String]
 		def format_value(value)
-		    if value.is_a? Units::Numeric
-			"%g" % value.send("to_#{@units}".to_sym)
-		    else
-			"%g" % value
-		    end
+			if value.is_a? Units::Numeric
+				"%g" % value.send("to_#{@units}".to_sym)
+			else
+				"%g" % value
+			end
 		end
 
 		# Emit the group codes for the center property of an element
 		# @param [Point] point	The center point to format
 		def center(point, transformation)
-		    point = transformation.transform(point) if transformation
-		    [10, format_value(point.x), 20, format_value(point.y)]
+			point = transformation.transform(point) if transformation
+			[10, format_value(point.x), 20, format_value(point.y)]
 		end
 
 		# Emit the group codes for the radius property of an element
 		def radius(element, transformation=nil)
-		    [40, format_value(transformation ? transformation.transform(element.radius) : element.radius)]
+			[40, format_value(transformation ? transformation.transform(element.radius) : element.radius)]
 		end
 
 		def section_end
-		    [0, 'ENDSEC']
+			[0, 'ENDSEC']
 		end
 
 		def section_start(name)
-		    [0, 'SECTION', 2, name]
+			[0, 'SECTION', 2, name]
+		end
+		
+		def table_start(name)
+			[0, 'TABLE', 2, name]
+		end
+		
+		def table_end
+			[0, 'ENDTAB']
+		end
+		
+		def ltype(name)
+			table_entry = [100, 'AcDbLinetypeTableRecord']
+			table_entry.concat([49, 0.5]) if name is 'dashed'
 		end
 	# @endgroup
 
@@ -84,38 +97,41 @@ module DXF
 		# @param [Transformation] transformation    The transformation to apply to each geometry element
 		# @return [Array]
 		def to_array(element, transformation=nil)
-		    layer = 0;
-		    case element
-			when Geometry::Arc
-			    [ 0, 'ARC', center(element.center, transformation), radius(element),
-			    50, format_value(element.start_angle),
-			    51, format_value(element.end_angle)]
-			when Geometry::Circle
-			    [0, 'CIRCLE', 8, layer, center(element.center, transformation), radius(element)]
-			when Geometry::Text
-				text(element.position, element.content, layer)
-			when Geometry::Edge, Geometry::Line
-			    line(element.first, element.last, layer, transformation, element.options)
-			when Geometry::Polyline
-			    element.edges.map {|edge| line(edge.first, edge.last, layer, transformation, element.options) }
-			when Geometry::Rectangle
-			    element.edges.map {|edge| line(edge.first, edge.last, layer, transformation, element.options) }
-			when Geometry::Square
-			    points = element.points
-			    points.each_cons(2).map {|p1,p2| line(p1,p2, layer, transformation) } + line(points.last, points.first, layer, transformation, element.options)
-			when Sketch
-			    transformation = transformation ? (transformation + element.transformation) : element.transformation
-			    element.geometry.map {|e| to_array(e, transformation)}
-		    end
+			layer = 0;
+			case element
+				when Geometry::Arc
+					[ 0, 'ARC', center(element.center, transformation), radius(element),
+					50, format_value(element.start_angle),
+					51, format_value(element.end_angle)]
+				when Geometry::Circle
+					[0, 'CIRCLE', 8, layer, center(element.center, transformation), radius(element)]
+				when Geometry::Text
+					text(element.position, element.content, layer)
+				when Geometry::Edge, Geometry::Line
+					line(element.first, element.last, layer, transformation, element.options)
+				when Geometry::Polyline
+					element.edges.map {|edge| line(edge.first, edge.last, layer, transformation, element.options) }
+				when Geometry::Rectangle
+					element.edges.map {|edge| line(edge.first, edge.last, layer, transformation, element.options) }
+				when Geometry::Square
+					points = element.points
+					points.each_cons(2).map {|p1,p2| line(p1,p2, layer, transformation) } + line(points.last, points.first, layer, transformation, element.options)
+				when Sketch
+					transformation = transformation ? (transformation + element.transformation) : element.transformation
+					element.geometry.map {|e| to_array(e, transformation)}
+			end
 		end
 
 		# Convert a {Sketch} to a DXF file and write it to the given output
 		# @param [IO] output    A writable IO-like object
 		# @param [Sketch] sketch	The {Sketch} to unparse
 		def unparse(output, sketch)
-		    output << (section_start('HEADER') + section_end +
-			       section_start('ENTITIES') + to_array(sketch) + section_end +
-			       [0, 'EOF']).join("\n")
+			output << (section_start('HEADER') + section_end +
+			section_start('TABLES') +
+				table_start('LTYPE') + table_end +
+			section_end +
+			section_start('ENTITIES') + to_array(sketch) + section_end +
+			[0, 'EOF']).join("\n")
 		end
     end
 end
