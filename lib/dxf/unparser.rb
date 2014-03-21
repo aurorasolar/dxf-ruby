@@ -6,37 +6,38 @@ require 'stringio'
 module DXF
 	class Unparser
 		attr_accessor :container
-
+		
 		# Initialize with a Sketch
 		# @param [String,Symbol] units	The units to convert length values to (:inches or :millimeters)
 		def initialize(units=:mm)
-		    @units = units
+			@units = units
 		end
-
+		
 		def to_s
-		    io = StringIO.new
-		    unparse(io, container)
-		    io.string
+			io = StringIO.new
+			unparse(io, container)
+			io.string
 		end
-
+	
 	# @group Element Formatters
 		# Convert a {Geometry::Line} into group codes
-		def line(first, last, layer=0, transformation=nil)
-		    first, last = Geometry::Point[first], Geometry::Point[last]
-		    first, last = [first, last].map {|point| transformation.transform(point) } if transformation
-
-		    [ 0, 'LINE',
-		    8, layer,
-		    10, format_value(first.x),
-		    20, format_value(first.y),
-		    11, format_value(last.x),
-		    21, format_value(last.y)]
+		def line(first, last, layer=0, transformation=nil, options={})
+			first, last = Geometry::Point[first], Geometry::Point[last]
+			first, last = [first, last].map {|point| transformation.transform(point) } if transformation
+			
+			group_code = [ 0, 'LINE',
+			8, layer,
+			10, format_value(first.x),
+			20, format_value(first.y),
+			11, format_value(last.x),
+			21, format_value(last.y)]
+			group_code.concat [280, 2] if options[:dashed]
 		end
 	# @endgroup
-	
+		
 		def text(position, content, layer=0, transformation=nil)
 			position = transformation.transform(position) if transformation
-		
+			
 			[0, 'TEXT',
 			8, layer,
 			10, format_value(position.x),
@@ -92,14 +93,14 @@ module DXF
 			when Geometry::Text
 				text(element.position, element.content, layer)
 			when Geometry::Edge, Geometry::Line
-			    line(element.first, element.last, layer, transformation)
+			    line(element.first, element.last, layer, transformation, element.options)
 			when Geometry::Polyline
-			    element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) }
+			    element.edges.map {|edge| line(edge.first, edge.last, layer, transformation, element.options) }
 			when Geometry::Rectangle
-			    element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) }
+			    element.edges.map {|edge| line(edge.first, edge.last, layer, transformation, element.options) }
 			when Geometry::Square
 			    points = element.points
-			    points.each_cons(2).map {|p1,p2| line(p1,p2, layer, transformation) } + line(points.last, points.first, layer, transformation)
+			    points.each_cons(2).map {|p1,p2| line(p1,p2, layer, transformation) } + line(points.last, points.first, layer, transformation, element.options)
 			when Sketch
 			    transformation = transformation ? (transformation + element.transformation) : element.transformation
 			    element.geometry.map {|e| to_array(e, transformation)}
