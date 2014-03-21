@@ -31,7 +31,8 @@ module DXF
 			20, format_value(first.y),
 			11, format_value(last.x),
 			21, format_value(last.y)]
-			group_code.concat [280, 2] if options[:dashed]
+			group_code.concat [280, 5] if options[:dashed]
+			group_code
 		end
 	# @endgroup
 		
