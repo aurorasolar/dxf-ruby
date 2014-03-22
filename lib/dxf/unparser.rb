@@ -65,16 +65,16 @@ module DXF
 			point = transformation.transform(point) if transformation
 			[10, format_value(point.x), 20, format_value(point.y)]
 		end
-
+		
 		# Emit the group codes for the radius property of an element
 		def radius(element, transformation=nil)
 			[40, format_value(transformation ? transformation.transform(element.radius) : element.radius)]
 		end
-
+		
 		def section_end
 			[0, 'ENDSEC']
 		end
-
+		
 		def section_start(name)
 			[0, 'SECTION', 2, name]
 		end
@@ -131,7 +131,7 @@ module DXF
 		def unparse(output, sketch)
 			output << (section_start('HEADER') + section_end +
 			section_start('TABLES') +
-				table_start('LTYPE') + table_end +
+				table_start('LTYPE') + ltype('dashed') + table_end +
 			section_end +
 			section_start('ENTITIES') + to_array(sketch) + section_end +
 			[0, 'EOF']).join("\n")
