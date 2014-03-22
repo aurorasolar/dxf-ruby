@@ -32,7 +32,7 @@ module DXF
 			11, format_value(last.x),
 			21, format_value(last.y)]
 			group_code.concat [62, options[:color]] if options[:color]
-			group_code.concat [280, 5] if options[:dashed]
+			group_code.concat [6, 'DASHED'] if options[:dashed]
 			group_code
 		end
 	# @endgroup
@@ -89,7 +89,10 @@ module DXF
 		
 		def ltype(name)
 			table_entry = [100, 'AcDbLinetypeTableRecord']
-			table_entry.concat([49, 0.5]) if name is 'dashed'
+			if name == 'dashed'
+				[2, 'LTYPE', 0, 'LTYPE', 2, 'DASHED', 73, 1]
+				# table_entry.concat([49, 0.5])
+			end
 		end
 	# @endgroup
 
@@ -115,7 +118,7 @@ module DXF
 					element.edges.map {|edge| line(edge.first, edge.last, layer, transformation, element.options) }
 				when Geometry::Square
 					points = element.points
-					points.each_cons(2).map {|p1,p2| line(p1,p2, layer, transformation) } + line(points.last, points.first, layer, transformation, element.options)
+					points.each_cons(2).map {|p1,p2| line(p1,p2, layer, transformation, element.options) } + line(points.last, points.first, layer, transformation, element.options)
 				when Sketch
 					transformation = transformation ? (transformation + element.transformation) : element.transformation
 					element.geometry.map {|e| to_array(e, transformation)}
