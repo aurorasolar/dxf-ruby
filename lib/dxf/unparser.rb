@@ -122,7 +122,7 @@ module DXF
 					element.edges.map {|edge| line(edge.first, edge.last, layer, transformation).concat setOptions(element.options) }
 				when Geometry::Square
 					points = element.points
-					points.each_cons(2).map {|p1,p2| line(p1,p2, layer, transformation).concat setOptions(element.options) } + line(points.last, points.first, layer, transformation).concat setOptions(element.options)
+					points.each_cons(2).map {|p1,p2| line(p1,p2, layer, transformation).concat(setOptions(element.options)) } + line(points.last, points.first, layer, transformation).concat setOptions(element.options)
 				when Sketch
 					transformation = transformation ? (transformation + element.transformation) : element.transformation
 					element.geometry.map {|e| to_array(e, transformation)}
