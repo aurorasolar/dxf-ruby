@@ -109,20 +109,20 @@ module DXF
 				when Geometry::Arc
 					[ 0, 'ARC', center(element.center, transformation), radius(element),
 					50, format_value(element.start_angle),
-					51, format_value(element.end_angle), setOptions(element.options)]
+					51, format_value(element.end_angle)].concat setOptions(element.options)
 				when Geometry::Circle
 					[0, 'CIRCLE', 8, layer, center(element.center, transformation), radius(element)]
 				when Geometry::Text
 					text(element.position, element.content, layer)
 				when Geometry::Edge, Geometry::Line
-					line(element.first, element.last, layer, transformation, setOptions(element.options))
+					line(element.first, element.last, layer, transformation).setOptions(element.options)
 				when Geometry::Polyline
-					element.edges.map {|edge| line(edge.first, edge.last, layer, transformation, element.options) }
+					element.edges.map {|edge| line(edge.first, edge.last, layer, transformation).setOptions(element.options) }
 				when Geometry::Rectangle
-					element.edges.map {|edge| line(edge.first, edge.last, layer, transformation, element.options) }
+					element.edges.map {|edge| line(edge.first, edge.last, layer, transformation).setOptions(element.options) }
 				when Geometry::Square
 					points = element.points
-					points.each_cons(2).map {|p1,p2| line(p1,p2, layer, transformation, element.options) } + line(points.last, points.first, layer, transformation, element.options)
+					points.each_cons(2).map {|p1,p2| line(p1,p2, layer, transformation).setOptions(element.options) } + line(points.last, points.first, layer, transformation).setOptions(element.options)
 				when Sketch
 					transformation = transformation ? (transformation + element.transformation) : element.transformation
 					element.geometry.map {|e| to_array(e, transformation)}
