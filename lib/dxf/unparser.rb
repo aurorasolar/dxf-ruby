@@ -25,27 +25,24 @@ module DXF
 			first, last = Geometry::Point[first], Geometry::Point[last]
 			first, last = [first, last].map {|point| transformation.transform(point) } if transformation
 			
-			group_code = [ 0, 'LINE',
+			[ 0, 'LINE',
 			8, layer,
 			10, format_value(first.x),
 			20, format_value(first.y),
 			11, format_value(last.x),
-			21, format_value(last.y)]
-			group_code.concat [62, options[:color]] if options[:color]
-			group_code.concat [6, 'DASHED'] if options[:dashed]
-			group_code
+			21, format_value(last.y) ]
 		end
 	# @endgroup
 		
 		def text(position, content, layer=0, transformation=nil)
 			position = transformation.transform(position) if transformation
 			
-			[0, 'TEXT',
+			[ 0, 'TEXT',
 			8, layer,
 			10, format_value(position.x),
 			20, format_value(position.y),
 			1, content,
-			7, 'NewTextStyle_4']
+			7, 'NewTextStyle_4' ]
 		end
 	
 	# @group Property Converters
@@ -58,21 +55,28 @@ module DXF
 				"%g" % value
 			end
 		end
-
+		
+		def setOptions(options={})
+			group_code = []
+			group_code.concat [62, options[:color]] if options[:color]
+			group_code.concat [6, 'DASHED'] if options[:dashed]
+			group_code
+		end
+		
 		# Emit the group codes for the center property of an element
 		# @param [Point] point	The center point to format
-		def center(point, transformation)
+		def center(point, transformation, options={})
 			point = transformation.transform(point) if transformation
-			[10, format_value(point.x), 20, format_value(point.y)]
+			[ 10, format_value(point.x), 20, format_value(point.y) ]
 		end
 		
 		# Emit the group codes for the radius property of an element
 		def radius(element, transformation=nil)
-			[40, format_value(transformation ? transformation.transform(element.radius) : element.radius)]
+			[ 40, format_value(transformation ? transformation.transform(element.radius) : element.radius) ]
 		end
 		
 		def section_end
-			[0, 'ENDSEC']
+			[ 0, 'ENDSEC' ]
 		end
 		
 		def section_start(name)
@@ -105,13 +109,13 @@ module DXF
 				when Geometry::Arc
 					[ 0, 'ARC', center(element.center, transformation), radius(element),
 					50, format_value(element.start_angle),
-					51, format_value(element.end_angle)]
+					51, format_value(element.end_angle), setOptions(element.options)]
 				when Geometry::Circle
 					[0, 'CIRCLE', 8, layer, center(element.center, transformation), radius(element)]
 				when Geometry::Text
 					text(element.position, element.content, layer)
 				when Geometry::Edge, Geometry::Line
-					line(element.first, element.last, layer, transformation, element.options)
+					line(element.first, element.last, layer, transformation, setOptions(element.options))
 				when Geometry::Polyline
 					element.edges.map {|edge| line(edge.first, edge.last, layer, transformation, element.options) }
 				when Geometry::Rectangle
