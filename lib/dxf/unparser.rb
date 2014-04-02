@@ -94,9 +94,10 @@ module DXF
 		def ltype(name)
 			table_entry = [100, 'AcDbLinetypeTableRecord']
 			if name == 'dashed'
-				[2, 'LTYPE', 0, 'LTYPE', 2, 'DASHED', 73, 1]
+				table_entry.concat [2, 'LTYPE', 0, 'LTYPE', 2, 'DASHED', 73, 1]
 				# table_entry.concat([49, 0.5])
 			end
+			table_entry
 		end
 	# @endgroup
 
@@ -107,7 +108,7 @@ module DXF
 			layer = 0;
 			case element
 				when Geometry::Arc
-					[ 0, 'ARC', center(element.center, transformation), radius(element),
+					[0, 'ARC', center(element.center, transformation), radius(element),
 					50, format_value(element.start_angle),
 					51, format_value(element.end_angle)].concat setOptions(element.options)
 				when Geometry::Circle
@@ -135,6 +136,7 @@ module DXF
 		def unparse(output, sketch)
 			output << (section_start('HEADER') + section_end +
 			section_start('TABLES') +
+				table_start('LTYPE') + ltype('dashed') + table_end +
 			section_end +
 			section_start('ENTITIES') + to_array(sketch) + section_end +
 			[0, 'EOF']).join("\n")
