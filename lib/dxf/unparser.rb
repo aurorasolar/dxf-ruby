@@ -135,9 +135,9 @@ module DXF
 		# @param [Sketch] sketch	The {Sketch} to unparse
 		def unparse(output, sketch)
 			output << (section_start('HEADER') + section_end +
-			# section_start('TABLES') +
-			# 	table_start('LTYPE') + ltype('dashed') + table_end +
-			# section_end +
+			section_start('TABLES') +
+				table_start('LTYPE') + ltype('dashed') + table_end +
+			section_end +
 			section_start('ENTITIES') + to_array(sketch) + section_end +
 			[0, 'EOF']).join("\n")
 		end
