@@ -65,6 +65,7 @@ module DXF
 			group_code = []
 			group_code.concat [62, options[:color]] if options[:color]
 			group_code.concat [6, 'DASHED'] if options[:dashed]
+			group_code.concat [40, options[:lineHeight]] if options[:lineHeight]
 			group_code
 		end
 		
@@ -119,7 +120,7 @@ module DXF
 				when Geometry::Circle
 					[0, 'CIRCLE', 8, layer, center(element.center, transformation), radius(element)]
 				when Geometry::Text
-					text(element.position, element.content, layer)
+					text(element.position, element.content, layer).concat setOptions(element.options)
 				when Geometry::Edge, Geometry::Line
 					line(element.first, element.last, layer, transformation).concat setOptions(element.options)
 				when Geometry::Polyline
