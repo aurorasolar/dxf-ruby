@@ -42,6 +42,7 @@ module DXF
 			10, format_value(position.x),
 			20, format_value(position.y),
 			1, content,
+			62, 7,
 			7, 'NewTextStyle_4' ]
 		end
 	
