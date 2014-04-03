@@ -37,13 +37,14 @@ module DXF
 		def text(position, content, layer=0, transformation=nil)
 			position = transformation.transform(position) if transformation
 			
-			[ 0, 'TEXT',
-			8, layer,
-			10, format_value(position.x),
-			20, format_value(position.y),
-			1, content,
-			100, 'AcDbText',
-			7, 'NewTextStyle_4' ]
+			[
+				0, 'TEXT',
+				8, layer,
+				10, format_value(position.x),
+				20, format_value(position.y),
+				1, content,
+				7, 'NewTextStyle_4'
+			]
 		end
 	
 	# @group Property Converters
