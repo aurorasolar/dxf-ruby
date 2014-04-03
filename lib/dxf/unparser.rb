@@ -41,7 +41,8 @@ module DXF
 			
 			[
 				0, 'TEXT',
-				8, layer,
+				8, 'E-TEXT', #layer,
+				100, 'AcDbText',
 				10, format_value(position.x),
 				20, format_value(position.y),
 				1, content,
@@ -62,8 +63,8 @@ module DXF
 		
 		def setOptions(options={})
 			group_code = []
-			# group_code.concat [62, options[:color]] if options[:color]
-			# group_code.concat [6, 'DASHED'] if options[:dashed]
+			group_code.concat [62, options[:color]] if options[:color]
+			group_code.concat [6, 'DASHED'] if options[:dashed]
 			group_code
 		end
 		
@@ -97,10 +98,10 @@ module DXF
 		
 		def ltype(name)
 			table_entry = [100, 'AcDbLinetypeTableRecord']
-			if name == 'dashed'
-				table_entry.concat [2, 'LTYPE', 0, 'LTYPE', 2, 'DASHED', 73, 1]
-				# table_entry.concat([49, 0.5])
-			end
+			table_entry.concat [2, 'LTYPE', 0, 'LTYPE', 2, 'DASHED', 73, 1] if name == 'dashed'
+			# 	table_entry.concat [2, 'LTYPE', 0, 'LTYPE', 2, 'DASHED', 73, 1]
+			# 	# table_entry.concat([49, 0.5])
+			# end
 			table_entry
 		end
 	# @endgroup
@@ -139,9 +140,9 @@ module DXF
 		# @param [Sketch] sketch	The {Sketch} to unparse
 		def unparse(output, sketch)
 			output << (section_start('HEADER') + section_end +
-			# section_start('TABLES') +
-			# 	table_start('LTYPE') + ltype('dashed') + table_end +
-			# section_end +
+			section_start('TABLES') +
+				table_start('LTYPE') + ltype('dashed') + table_end +
+			section_end +
 			section_start('ENTITIES') + to_array(sketch) + section_end +
 			[0, 'EOF']).join("\n")
 		end
