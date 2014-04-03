@@ -25,12 +25,14 @@ module DXF
 			first, last = Geometry::Point[first], Geometry::Point[last]
 			first, last = [first, last].map {|point| transformation.transform(point) } if transformation
 			
-			[ 0, 'LINE',
-			8, layer,
-			10, format_value(first.x),
-			20, format_value(first.y),
-			11, format_value(last.x),
-			21, format_value(last.y) ]
+			[
+				0, 'LINE',
+				8, layer,
+				10, format_value(first.x),
+				20, format_value(first.y),
+				11, format_value(last.x),
+				21, format_value(last.y)
+			]
 		end
 	# @endgroup
 		
@@ -60,8 +62,8 @@ module DXF
 		
 		def setOptions(options={})
 			group_code = []
-			group_code.concat [62, options[:color]] if options[:color]
-			group_code.concat [6, 'DASHED'] if options[:dashed]
+			# group_code.concat [62, options[:color]] if options[:color]
+			# group_code.concat [6, 'DASHED'] if options[:dashed]
 			group_code
 		end
 		
@@ -137,9 +139,9 @@ module DXF
 		# @param [Sketch] sketch	The {Sketch} to unparse
 		def unparse(output, sketch)
 			output << (section_start('HEADER') + section_end +
-			section_start('TABLES') +
-				table_start('LTYPE') + ltype('dashed') + table_end +
-			section_end +
+			# section_start('TABLES') +
+			# 	table_start('LTYPE') + ltype('dashed') + table_end +
+			# section_end +
 			section_start('ENTITIES') + to_array(sketch) + section_end +
 			[0, 'EOF']).join("\n")
 		end
