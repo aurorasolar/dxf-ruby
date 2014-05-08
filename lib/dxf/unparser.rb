@@ -110,6 +110,7 @@ module DXF
 			table_group = [2, 'LAYER', 70, layers.count]
 			for layer in layers
 				table_group += [0, 'LAYER', 2, layer]
+			end
 			table_group
 		end
 	# @endgroup
