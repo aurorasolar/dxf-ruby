@@ -120,7 +120,7 @@ module DXF
 		# @return [Array]
 		def to_array(element, transformation=nil)
 			layer = 1
-			layer = element.options[:layer] if element.options[:layer]
+			layer = element.options[:layer] if element.class != Sketch and element.options[:layer]
 			case element
 				when Geometry::Arc
 					[0, 'ARC', center(element.center, transformation), radius(element),
