@@ -107,7 +107,7 @@ module DXF
 		end
 
 		def set_layers(layers)
-			table_group = [2, 'LAYER', 70, layers.count]
+			table_group = [70, layers.count]
 			for layer in layers
 				table_group += [0, 'LAYER', 2, layer]
 			end
