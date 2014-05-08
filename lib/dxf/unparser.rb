@@ -21,7 +21,7 @@ module DXF
 	
 	# @group Element Formatters
 		# Convert a {Geometry::Line} into group codes
-		def line(first, last, layer=0, transformation=nil, options={})
+		def line(first, last, layer=1, transformation=nil, options={})
 			first, last = Geometry::Point[first], Geometry::Point[last]
 			first, last = [first, last].map {|point| transformation.transform(point) } if transformation
 			
@@ -36,7 +36,7 @@ module DXF
 		end
 	# @endgroup
 		
-		def text(position, content, layer=0, transformation=nil)
+		def text(position, content, layer=1, transformation=nil)
 			position = transformation.transform(position) if transformation
 			
 			[
@@ -105,13 +105,21 @@ module DXF
 			# end
 			table_entry
 		end
+
+		def set_layers(layers)
+			table_group = [2, 'LAYER', 70, layers.count]
+			for layer in layers
+				table_group += [0, 'LAYER', 2, layer]
+			table_group
+		end
 	# @endgroup
 
 		# Convert an element to an Array
 		# @param [Transformation] transformation    The transformation to apply to each geometry element
 		# @return [Array]
 		def to_array(element, transformation=nil)
-			layer = 0;
+			layer = 1
+			layer = element.options[:layer] if element.options[:layer]
 			case element
 				when Geometry::Arc
 					[0, 'ARC', center(element.center, transformation), radius(element),
@@ -139,13 +147,15 @@ module DXF
 		# Convert a {Sketch} to a DXF file and write it to the given output
 		# @param [IO] output    A writable IO-like object
 		# @param [Sketch] sketch	The {Sketch} to unparse
-		def unparse(output, sketch)
-			output << (section_start('HEADER') + section_end +
+		def unparse(output, sketch, layers=[1])
+			str = (section_start('HEADER') + section_end +
 			section_start('TABLES') +
 				table_start('LTYPE') + ltype('dashed') + table_end +
+				table_start('LAYER') + set_layers(layers) + table_end +
 			section_end +
 			section_start('ENTITIES') + to_array(sketch) + section_end +
 			[0, 'EOF']).join("\n")
+			output << str
 		end
     end
 end
