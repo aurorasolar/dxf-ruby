@@ -61,14 +61,6 @@ module DXF
 			end
 		end
 		
-		def setOptions(options={})
-			group_code = []
-			group_code.concat [62, options[:color]] if options[:color]
-			group_code.concat [6, 'DASHED'] if options[:dashed]
-			group_code.concat [40, options[:lineHeight]] if options[:lineHeight]
-			group_code
-		end
-		
 		# Emit the group codes for the center property of an element
 		# @param [Point] point	The center point to format
 		def center(point, transformation, options={})
@@ -99,11 +91,20 @@ module DXF
 		
 		def ltype(name)
 			table_entry = [100, 'AcDbLinetypeTableRecord']
-			table_entry.concat [2, 'LTYPE', 0, 'LTYPE', 2, 'DASHED', 73, 1] if name == 'dashed'
+			table_entry += [2, 'LTYPE', 0, 'LTYPE', 2, 'DASHED', 73, 1] if name == 'dashed'
 			# 	table_entry.concat [2, 'LTYPE', 0, 'LTYPE', 2, 'DASHED', 73, 1]
 			# 	# table_entry.concat([49, 0.5])
 			# end
 			table_entry
+		end
+
+		def set_options(options={})
+			group_code = []
+			group_code += [62, options[:color]] if options[:color]
+			group_code += [6, 'DASHED'] if options[:dashed]
+			group_code += [40, options[:lineHeight]] if options[:lineHeight]
+			group_code += [39, options[:thickness]] if options[:thickness]
+			group_code
 		end
 
 		def set_layers(layers)
@@ -125,20 +126,20 @@ module DXF
 				when Geometry::Arc
 					[0, 'ARC', center(element.center, transformation), radius(element),
 					50, format_value(element.start_angle),
-					51, format_value(element.end_angle)].concat setOptions(element.options)
+					51, format_value(element.end_angle)] + set_options(element.options)
 				when Geometry::Circle
 					[0, 'CIRCLE', 8, layer, center(element.center, transformation), radius(element)]
 				when Geometry::Text
-					text(element.position, element.content, layer).concat setOptions(element.options)
+					text(element.position, element.content, layer) + set_options(element.options)
 				when Geometry::Edge, Geometry::Line
-					line(element.first, element.last, layer, transformation).concat setOptions(element.options)
+					line(element.first, element.last, layer, transformation) + set_options(element.options)
 				when Geometry::Polyline
-					element.edges.map {|edge| line(edge.first, edge.last, layer, transformation).concat setOptions(element.options) }
+					element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
 				when Geometry::Rectangle
-					element.edges.map {|edge| line(edge.first, edge.last, layer, transformation).concat setOptions(element.options) }
+					element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
 				when Geometry::Square
 					points = element.points
-					points.each_cons(2).map {|p1,p2| line(p1,p2, layer, transformation).concat(setOptions(element.options)) } + line(points.last, points.first, layer, transformation).concat(setOptions(element.options))
+					points.each_cons(2).map {|p1,p2| line(p1,p2, layer, transformation) + set_options(element.options) } + line(points.last, points.first, layer, transformation) + set_options(element.options)
 				when Sketch
 					transformation = transformation ? (transformation + element.transformation) : element.transformation
 					element.geometry.map {|e| to_array(e, transformation)}
