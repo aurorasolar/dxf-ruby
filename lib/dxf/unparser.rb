@@ -103,7 +103,10 @@ module DXF
 			group_code += [62, options[:color]] if options[:color]
 			group_code += [6, 'DASHED'] if options[:dashed]
 			group_code += [40, options[:lineHeight]] if options[:lineHeight]
-			group_code += [39, options[:thickness]] if options[:thickness]
+			if options[:thickness]
+				debugger
+				group_code += [39, options[:thickness]]
+			end
 			group_code
 		end
 
