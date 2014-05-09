@@ -104,6 +104,7 @@ module DXF
 			group_code += [6, 'DASHED'] if options[:dashed]
 			group_code += [40, options[:lineHeight]] if options[:lineHeight]
 			group_code += [39, options[:thickness]] if options[:thickness]
+			group_code += [50, options[:rotation]] if options[:rotation]
 			group_code
 		end
 
@@ -150,7 +151,7 @@ module DXF
 		# @param [IO] output    A writable IO-like object
 		# @param [Sketch] sketch	The {Sketch} to unparse
 		def unparse(output, sketch, layers=[1])
-			str = (section_start('HEADER') + section_end +
+			str = ([999, 'DXF created from Aurora'] + section_start('HEADER') + section_end +
 			section_start('TABLES') +
 				table_start('LTYPE') + ltype('dashed') + table_end +
 				table_start('LAYER') + set_layers(layers) + table_end +
