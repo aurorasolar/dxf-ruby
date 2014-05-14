@@ -150,15 +150,14 @@ module DXF
 		# Convert a {Sketch} to a DXF file and write it to the given output
 		# @param [IO] output    A writable IO-like object
 		# @param [Sketch] sketch	The {Sketch} to unparse
-		def unparse(output, sketch, layers=[1])
-			str = ([999, 'DXF created from Aurora'] + section_start('HEADER') + section_end +
+		def unparse(sketch, layers=[1])
+			([999, 'DXF created from Aurora'] + section_start('HEADER') + section_end +
 			section_start('TABLES') +
 				table_start('LTYPE') + ltype('dashed') + table_end +
 				table_start('LAYER') + set_layers(layers) + table_end +
 			section_end +
 			section_start('ENTITIES') + to_array(sketch) + section_end +
 			[0, 'EOF']).join("\n")
-			output << str
 		end
     end
 end
