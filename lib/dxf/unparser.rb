@@ -61,6 +61,8 @@ module DXF
 			end
 
 			[
+				0, 'HATCH',
+				8, layer,
 				100, 'AcDbHatch',
 				70, 0,
 				91, 1,
@@ -157,7 +159,7 @@ module DXF
 				when Geometry::Edge, Geometry::Line
 					line(element.first, element.last, layer, transformation) + set_options(element.options)
 				when Geometry::Polyline
-					return hatch(element.vertices) if element.options[:hatch]
+					# return hatch(element.vertices, layer) if element.options[:hatch]
 					element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
 				when Geometry::Rectangle
 					element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
