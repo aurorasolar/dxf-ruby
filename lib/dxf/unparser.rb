@@ -57,9 +57,9 @@ module DXF
 			# populate array of x coordinates & array of y coordinates
 			[0..(points.length - 1)].each do |i|
 				if (i % 2) == 0
-					xs.push points[i]
+					xs.push format_value(points[i])
 				else
-					ys.push points[i]
+					ys.push format_value(points[i])
 				end
 			end
 
@@ -161,8 +161,7 @@ module DXF
 					line(element.first, element.last, layer, transformation) + set_options(element.options)
 				when Geometry::Polyline
 					if element.options[:hatch]
-						hatch(element.points)
-						next
+						return hatch(element.points)
 					element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
 				when Geometry::Rectangle
 					element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
