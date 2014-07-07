@@ -50,17 +50,14 @@ module DXF
 			]
 		end
 	
-		def hatch(points, layer=1)
+		def hatch(vertices, layer=1)
 			xs = []
 			ys = []
 
 			# populate array of x coordinates & array of y coordinates
-			[0..(points.length - 1)].each do |i|
-				if (i % 2) == 0
-					xs.push format_value(points[i])
-				else
-					ys.push format_value(points[i])
-				end
+			for vertex in vertices
+				xs.push format_value(vertex.x)
+				ys.push format_value(vertex.y)
 			end
 
 			[
@@ -69,7 +66,7 @@ module DXF
 				91, 1,
 				92, 2,
 				8, layer,
-				93, points.length, # number of polyline vertices
+				93, vertices.length, # number of polyline vertices
 				10, xs,
 				20, ys
 			]
@@ -160,7 +157,7 @@ module DXF
 				when Geometry::Edge, Geometry::Line
 					line(element.first, element.last, layer, transformation) + set_options(element.options)
 				when Geometry::Polyline
-					return hatch(element.points) if element.options[:hatch]
+					return hatch(element.vertices) if element.options[:hatch]
 					element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
 				when Geometry::Rectangle
 					element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
