@@ -50,6 +50,31 @@ module DXF
 			]
 		end
 	
+		def hatch(points, layer=1)
+			xs = []
+			ys = []
+
+			# populate array of x coordinates & array of y coordinates
+			[0..(points.length - 1)].each do |i|
+				if (i % 2) == 0
+					xs.push points[i]
+				else
+					ys.push points[i]
+				end
+			end
+
+			[
+				100, 'AcDbHatch',
+				70, 0,
+				91, 1,
+				92, 2,
+				8, layer,
+				93, points.length, # number of polyline vertices
+				10, xs,
+				20, ys
+			]
+		end
+
 	# @group Property Converters
 		# Convert the given value to the correct units and return it as a formatted string
 		# @return [String]
@@ -135,6 +160,9 @@ module DXF
 				when Geometry::Edge, Geometry::Line
 					line(element.first, element.last, layer, transformation) + set_options(element.options)
 				when Geometry::Polyline
+					if element.options[:hatch]
+						hatch(element.points)
+						next
 					element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
 				when Geometry::Rectangle
 					element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
