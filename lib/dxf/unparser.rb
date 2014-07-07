@@ -160,8 +160,7 @@ module DXF
 				when Geometry::Edge, Geometry::Line
 					line(element.first, element.last, layer, transformation) + set_options(element.options)
 				when Geometry::Polyline
-					if element.options[:hatch]
-						return hatch(element.points)
+					return hatch(element.points) if element.options[:hatch]
 					element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
 				when Geometry::Rectangle
 					element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
