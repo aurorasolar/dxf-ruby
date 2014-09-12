@@ -50,7 +50,7 @@ module DXF
             #   70: 1               (close polyline)
             # }
             code = [
-                0, 'AcDb2dPolyline',
+                0, 'POLYLINE',
                 70, 1
             ]
 
