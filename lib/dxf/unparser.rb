@@ -190,7 +190,11 @@ module DXF
                     # element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
                     pline(element.vertices, layer, transformation) + set_options(element.options)
                 when Geometry::Rectangle
-                    element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
+                    point0, point2 = *element.points
+                    point1 = Point[point2.x, point0.y]
+                    point3 = Point[point0.x, point2.y]
+                    # element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
+                    pline([point0, point1, point2, point3], layer, transformation) + set_options(element.options)
                 when Geometry::Square
                     points = element.points
                     points.each_cons(2).map {|p1,p2| line(p1,p2, layer, transformation) + set_options(element.options) } + line(points.last, points.first, layer, transformation) + set_options(element.options)
