@@ -27,7 +27,7 @@ module DXF
             
             [
                 0, 'LINE',
-                8, layer,
+                8, 0, #layer,
                 10, format_value(first.x),
                 20, format_value(first.y),
                 11, format_value(last.x),
@@ -46,6 +46,7 @@ module DXF
             # }
             code = [
                 0, 'POLYLINE',
+				8, 0,
                 100, 'AcDb2dPolyline',
                 70, 1
             ]
@@ -69,7 +70,7 @@ module DXF
             
             [
                 0, 'TEXT',
-                8, 'E-TEXT', #layer,
+                8, 0, #'E-TEXT', #layer,
                 100, 'AcDbText',
                 10, format_value(position.x),
                 20, format_value(position.y),
@@ -90,12 +91,12 @@ module DXF
 
             [
                 0, 'HATCH',
-                8, layer,
+                8, 0, #layer,
                 100, 'AcDbHatch',
                 70, 0,
                 91, 1,
                 92, 2,
-                8, layer,
+                8, 0, #layer,
                 93, vertices.length, # number of polyline vertices
                 10, xs,
                 20, ys
@@ -181,7 +182,7 @@ module DXF
                     50, format_value(element.start_angle),
                     51, format_value(element.end_angle)] + set_options(element.options)
                 when Geometry::Circle
-                    [0, 'CIRCLE', 8, layer, center(element.center, transformation), radius(element)]
+                    [0, 'CIRCLE', 8, 0, center(element.center, transformation), radius(element)]
                 when Geometry::Text
                     text(element.position, element.content, layer) + set_options(element.options)
                 when Geometry::Edge, Geometry::Line
@@ -209,10 +210,10 @@ module DXF
         # @param [IO] output    A writable IO-like object
         # @param [Sketch] sketch    The {Sketch} to unparse
         def unparse(sketch, layers=[1])
-            ([999, 'DXF created from Aurora'] + section_start('HEADER') + section_end +
+            ([999, 'Design created by Aurora'] + section_start('HEADER') + section_end +
             section_start('TABLES') +
                 table_start('LTYPE') + ltype('dashed') + table_end +
-                table_start('LAYER') + set_layers(layers) + table_end +
+                # table_start('LAYER') + set_layers(layers) + table_end +
             section_end +
             section_start('ENTITIES') + to_array(sketch) + section_end +
             [0, 'EOF']).join("\n")
