@@ -37,9 +37,8 @@ module DXF
     # @endgroup
         
         def pline(points, layer=1, transformation=nil, options={})
-            gpoints = []
 
-            gpoints = gpoints.map {|point| transformation.transform(point) } if transformation
+            points = points.map {|point| transformation.transform(point) } if transformation
 
             # { 
             #   0: 'AcDb2dPolyline' (group code)
@@ -54,7 +53,7 @@ module DXF
             #   10: [x] (x coordinate of a point)
             #   20: [y] (y coordinate of a point)
             # }
-            for point in gpoints
+            for point in points
                 code.push 10
                 code.push point.x
                 code.push 20
