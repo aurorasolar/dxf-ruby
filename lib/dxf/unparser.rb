@@ -46,6 +46,7 @@ module DXF
             # }
             code = [
                 0, 'POLYLINE',
+                100, 'AcDb2dPolyline',
                 70, 1
             ]
 
