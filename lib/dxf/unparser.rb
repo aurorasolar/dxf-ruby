@@ -39,10 +39,6 @@ module DXF
         def pline(points, layer=1, transformation=nil, options={})
             gpoints = []
 
-            for point in points
-                gpoints.push Geometry::Point[point]
-            end
-
             gpoints = gpoints.map {|point| transformation.transform(point) } if transformation
 
             # { 
