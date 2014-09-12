@@ -191,8 +191,8 @@ module DXF
                     pline(element.vertices, layer, transformation) + set_options(element.options)
                 when Geometry::Rectangle
                     point0, point2 = *element.points
-                    point1 = Point[point2.x, point0.y]
-                    point3 = Point[point0.x, point2.y]
+                    point1 = Geometry::Point[point2.x, point0.y]
+                    point3 = Geometry::Point[point0.x, point2.y]
                     # element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
                     pline([point0, point1, point2, point3], layer, transformation) + set_options(element.options)
                 when Geometry::Square
