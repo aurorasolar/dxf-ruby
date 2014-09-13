@@ -48,8 +48,8 @@ module DXF
             # }
             code = [
                 0, 'LWPOLYLINE',
-				5, 1E4,
-				330, 1F,
+				5, '1E4',
+				330, '1F'',
 				100, 'AcDbEntity',
 				8, layer,
                 100, 'AcDbPolyline',
