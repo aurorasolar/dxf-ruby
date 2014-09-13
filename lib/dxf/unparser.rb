@@ -49,6 +49,7 @@ module DXF
 				8, layer,
                 100, 'AcDbPolyline',
 				90, points.length,
+				39, 1,
                 70, 1
             ]
 
