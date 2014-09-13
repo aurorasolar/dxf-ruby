@@ -42,15 +42,18 @@ module DXF
 
             # { 
             #   0: 'AcDb2dPolyline' (group code)
+			#   8: [layer]          (layer)
             #   70: 1               (close polyline)
+			#   39: 1               (thickness)
             # }
             code = [
                 0, 'LWPOLYLINE',
+				100, 'AcDbEntity',
 				8, layer,
                 100, 'AcDbPolyline',
 				90, points.length,
-				39, 1,
-                70, 1
+                70, 0,
+				43, 0
             ]
 
             # {
