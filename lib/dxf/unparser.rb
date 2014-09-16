@@ -49,10 +49,8 @@ module DXF
             code = [
                 0, 'LWPOLYLINE',
 				8, layer,
-                100, 'AcDbPolyline',
 				90, points.length,
                 70, 1,
-				43, 0
             ]
 
             # {
