@@ -48,9 +48,8 @@ module DXF
             # }
             code = [
                 0, 'LWPOLYLINE',
-				8, layer,
-				90, points.length,
-                70, 1,
+                8, layer,
+                90, points.length,
             ]
 
             # {
@@ -160,6 +159,7 @@ module DXF
             group_code += [40, options[:lineHeight]] if options[:lineHeight]
             group_code += [39, options[:thickness]] if options[:thickness]
             group_code += [50, options[:rotation]] if options[:rotation]
+            group_code += [70, 1] if options[:closed]
             group_code
         end
 
