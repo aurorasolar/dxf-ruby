@@ -6,25 +6,25 @@ require 'stringio'
 module DXF
     class Unparser
         attr_accessor :container
-        
+
         # Initialize with a Sketch
         # @param [String,Symbol] units  The units to convert length values to (:inches or :millimeters)
         def initialize(units=:mm)
             @units = units
         end
-        
+
         def to_s
             io = StringIO.new
             unparse(io, container)
             io.string
         end
-    
+
     # @group Element Formatters
         # Convert a {Geometry::Line} into group codes
         def line(first, last, layer=1, transformation=nil, options={})
             first, last = Geometry::Point[first], Geometry::Point[last]
             first, last = [first, last].map {|point| transformation.transform(point) } if transformation
-            
+
             [
                 0, 'LINE',
                 8, layer,
@@ -35,12 +35,12 @@ module DXF
             ]
         end
     # @endgroup
-        
+
         def pline(points, layer=1, transformation=nil, options={})
 
             points = points.map {|point| transformation.transform(point) } if transformation
 
-            # { 
+            # {
             #   0: 'AcDb2dPolyline' (group code)
 			#   8: [layer]          (layer)
             #   70: 1               (close polyline)
@@ -68,10 +68,10 @@ module DXF
 
         def text(position, content, layer=1, transformation=nil)
             position = transformation.transform(position) if transformation
-            
+
             [
                 0, 'TEXT',
-                8, 'E-TEXT', #layer,
+                8, layer,
                 100, 'AcDbText',
                 10, format_value(position.x),
                 20, format_value(position.y),
@@ -79,7 +79,7 @@ module DXF
                 7, 'NewTextStyle_4'
             ]
         end
-    
+
         def hatch(vertices, layer=1)
             xs = []
             ys = []
@@ -114,35 +114,35 @@ module DXF
                 "%g" % value
             end
         end
-        
+
         # Emit the group codes for the center property of an element
         # @param [Point] point  The center point to format
         def center(point, transformation, options={})
             point = transformation.transform(point) if transformation
             [ 10, format_value(point.x), 20, format_value(point.y) ]
         end
-        
+
         # Emit the group codes for the radius property of an element
         def radius(element, transformation=nil)
             [ 40, format_value(transformation ? transformation.transform(element.radius) : element.radius) ]
         end
-        
+
         def section_end
             [ 0, 'ENDSEC' ]
         end
-        
+
         def section_start(name)
             [0, 'SECTION', 2, name]
         end
-        
+
         def table_start(name)
             [0, 'TABLE', 2, name]
         end
-        
+
         def table_end
             [0, 'ENDTAB']
         end
-        
+
         def ltype(name)
             table_entry = [100, 'AcDbLinetypeTableRecord']
             table_entry += [2, 'LTYPE', 0, 'LTYPE', 2, 'DASHED', 73, 1] if name == 'dashed'
