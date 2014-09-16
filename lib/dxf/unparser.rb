@@ -197,7 +197,7 @@ module DXF
                 when Geometry::Polyline
                     # return hatch(element.vertices, layer) if element.options[:hatch]
                     # element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
-                    pline(element.vertices, layer, transformation) + set_options(element.options)
+                    line(element.first, element.last, layer, transformation) + set_options(element.options)
                 when Geometry::Rectangle
                     point0, point2 = *element.points
                     point1 = Geometry::Point[point2.x, point0.y]
