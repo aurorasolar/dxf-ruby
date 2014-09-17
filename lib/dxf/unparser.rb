@@ -71,7 +71,7 @@ module DXF
 
             [
                 0, 'TEXT',
-                8, layer,
+                8, layer, # 'E-TEXT'
                 100, 'AcDbText',
                 10, format_value(position.x),
                 20, format_value(position.y),
