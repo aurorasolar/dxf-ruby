@@ -180,7 +180,7 @@ module DXF
             layer = element.options[:layer] if element.class != Sketch and element.options[:layer]
             case element
                 when Geometry::Arc
-                    [0, 'ARC', center(element.center, transformation), radius(element),
+                    [0, 'ARC', 8, layer, center(element.center, transformation), radius(element),
                     50, format_value(element.start_angle),
                     51, format_value(element.end_angle)] + set_options(element.options)
                 when Geometry::Circle
@@ -194,9 +194,6 @@ module DXF
                     # element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
                     pline(element.vertices, layer, transformation) + set_options(element.options)
                 when Geometry::Rectangle
-                    point0, point2 = *element.points
-                    point1 = Geometry::Point[point2.x, point0.y]
-                    point3 = Geometry::Point[point0.x, point2.y]
                     # element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
                     pline(element.points, layer, transformation) + set_options(element.options)
                 when Geometry::Square
