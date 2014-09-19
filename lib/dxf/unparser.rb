@@ -215,7 +215,7 @@ module DXF
                 table_start('LAYER') + set_layers(layers) + table_end +
             section_end +
             section_start('ENTITIES') + to_array(sketch) + section_end +
-            [0, 'EOF']).join("\n")
+            [0, 'EOF']).join("\r\n")
         end
     end
 end
