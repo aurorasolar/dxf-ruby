@@ -42,9 +42,9 @@ module DXF
 
             # {
             #   0: 'AcDb2dPolyline' (group code)
-			#   8: [layer]          (layer)
+      #   8: [layer]          (layer)
             #   70: 1               (close polyline)
-			#   39: 1               (thickness)
+      #   39: 1               (thickness)
             # }
             code = [
                 0, 'LWPOLYLINE',
@@ -184,7 +184,7 @@ module DXF
                     50, format_value(element.start_angle),
                     51, format_value(element.end_angle)] + set_options(element.options)
                 when Geometry::Circle
-                    [0, 'CIRCLE', 8, layer, center(element.center, transformation), radius(element)]
+                    [0, 'CIRCLE', 8, layer, center(element.center, transformation), radius(element)] + set_options(element.options)
                 when Geometry::Text
                     text(element.position, element.content, layer) + set_options(element.options)
                 when Geometry::Edge, Geometry::Line
