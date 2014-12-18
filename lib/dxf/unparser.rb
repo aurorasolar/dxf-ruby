@@ -191,11 +191,11 @@ module DXF
                     line(element.first, element.last, layer, transformation) + set_options(element.options)
                 when Geometry::Polyline
                     # return hatch(element.vertices, layer) if element.options[:hatch]
-                     element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
-                    #pline(element.vertices, layer, transformation) + set_options(element.options)
+                    # element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
+                    pline(element.vertices, layer, transformation) + set_options(element.options)
                 when Geometry::Rectangle
-                     element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
-                    #pline(element.points, layer, transformation) + set_options(element.options)
+                    # element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
+                    pline(element.points, layer, transformation) + set_options(element.options)
                 when Geometry::Square
                     points = element.points
                     points.each_cons(2).map {|p1,p2| line(p1,p2, layer, transformation) + set_options(element.options) } + line(points.last, points.first, layer, transformation) + set_options(element.options)
