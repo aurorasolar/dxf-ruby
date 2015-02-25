@@ -131,8 +131,14 @@ module DXF
             [ 0, 'ENDSEC' ]
         end
 
-        def section_start(name)
-            [0, 'SECTION', 2, name]
+        def section_start(name, data={})
+            code = [0, 'SECTION', 2, name]
+
+            if data
+                data.each { |k,v| code.push k, v }
+            end
+
+            code
         end
 
         def table_start(name)
@@ -145,7 +151,7 @@ module DXF
 
         def ltype(name)
             table_entry = [100, 'AcDbLinetypeTableRecord']
-            table_entry += [2, 'LTYPE', 0, 'LTYPE', 2, 'DASHED', 73, 1] if name == 'dashed'
+            table_entry += [2, 'LTYPE', 0, 'LTYPE', 2, 'DASHED', 70, 0, 3, '', 72, 65, 73, 1, 40, '0.0'] if name == 'dashed'
             #   table_entry.concat [2, 'LTYPE', 0, 'LTYPE', 2, 'DASHED', 73, 1]
             #   # table_entry.concat([49, 0.5])
             # end
@@ -166,7 +172,7 @@ module DXF
         def set_layers(layers)
             table_group = [70, layers.count]
             for layer in layers
-                table_group += [0, 'LAYER', 2, layer]
+                table_group += [0, 'LAYER', 100, 'AcDbSymbolTable', 100, 'AcDbLayerTable', 2, layer]
             end
             table_group
         end
@@ -191,11 +197,11 @@ module DXF
                     line(element.first, element.last, layer, transformation) + set_options(element.options)
                 when Geometry::Polyline
                     # return hatch(element.vertices, layer) if element.options[:hatch]
-                    # element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
-                    pline(element.vertices, layer, transformation) + set_options(element.options)
+                    element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
+                    # pline(element.vertices, layer, transformation) + set_options(element.options)
                 when Geometry::Rectangle
-                    # element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
-                    pline(element.points, layer, transformation) + set_options(element.options)
+                    element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
+                    # pline(element.points, layer, transformation) + set_options(element.options)
                 when Geometry::Square
                     points = element.points
                     points.each_cons(2).map {|p1,p2| line(p1,p2, layer, transformation) + set_options(element.options) } + line(points.last, points.first, layer, transformation) + set_options(element.options)
@@ -209,7 +215,7 @@ module DXF
         # @param [IO] output    A writable IO-like object
         # @param [Sketch] sketch    The {Sketch} to unparse
         def unparse(sketch, layers=[1])
-            ([999, 'Design created by Aurora'] + section_start('HEADER') + section_end +
+            ([999, 'Design created by Aurora'] + section_start('HEADER', '9' => '$ACADVER', '1' => 'AC1009') + section_end +
             section_start('TABLES') +
                 table_start('LTYPE') + ltype('dashed') + table_end +
                 table_start('LAYER') + set_layers(layers) + table_end +
