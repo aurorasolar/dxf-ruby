@@ -172,7 +172,7 @@ module DXF
         def set_layers(layers)
             table_group = [70, layers.count]
             for layer in layers
-                table_group += [0, 'LAYER', 100, 'AcDbSymbolTable', 100, 'AcDbLayerTable', 2, layer]
+                table_group += [0, 'LAYER', 100, 'AcDbSymbolTable', 100, 'AcDbLayerTable', 2, layer, 70, 0, 62, 7, 6, 'CONTINUOUS']
             end
             table_group
         end
