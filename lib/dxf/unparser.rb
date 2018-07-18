@@ -158,6 +158,12 @@ module DXF
             table_entry
         end
 
+        def get_metadata_code(metadata)
+          pairs = []
+          metadata.keys.each { |k| pairs.push "#{k}:#{metadata[k]}" }
+          [1000, pairs.join(',')]
+        end
+
         def set_options(options={})
             group_code = []
             group_code += [62, options[:color]] if options[:color]
@@ -166,6 +172,7 @@ module DXF
             group_code += [39, options[:thickness]] if options[:thickness]
             group_code += [50, options[:rotation]] if options[:rotation]
             group_code += [70, 1] if options[:closed]
+            group_code += get_metadata_code(options[:metadata]) if options[:metadata]
             group_code
         end
 
