@@ -47,23 +47,25 @@ module DXF
       #   39: 1               (thickness)
             # }
             code = [
-                0, 'LWPOLYLINE',
+                0, 'POLYLINE',
                 8, layer,
-                90, points.length,
+                # 90, points.length,
             ]
+            code.concat set_options(options)
 
             # {
             #   10: [x] (x coordinate of a point)
             #   20: [y] (y coordinate of a point)
             # }
-            for point in points
-                code.push 10
-                code.push point.x
-                code.push 20
-                code.push point.y
+            for point, i in points
+              # every point except for the first one
+              # is a separate VERTEX entity
+              code.concat [0, 'VERTEX', 8, layer] if i != 0
+              code.concat [10, point.x, 20, point.y]
             end
 
-            code
+            code.concat [0, 'SEQEND', 8, layer]
+            return code
         end
 
         def text(position, content, layer=1, transformation=nil)
@@ -203,12 +205,12 @@ module DXF
                 when Geometry::Edge, Geometry::Line
                     line(element.first, element.last, layer, transformation) + set_options(element.options)
                 when Geometry::Polyline
-                    # return hatch(element.vertices, layer) if element.options[:hatch]
-                    element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
-                    # pline(element.vertices, layer, transformation) + set_options(element.options)
+                    # hatch(element.vertices, layer) if element.options[:hatch]
+                    # element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
+                    pline(element.vertices, layer, transformation, element.options) # + set_options(element.options)
                 when Geometry::Rectangle
-                    element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
-                    # pline(element.points, layer, transformation) + set_options(element.options)
+                    # element.edges.map {|edge| line(edge.first, edge.last, layer, transformation) + set_options(element.options) }
+                    pline(element.points, layer, transformation, element.options) # + set_options(element.options)
                 when Geometry::Square
                     points = element.points
                     points.each_cons(2).map {|p1,p2| line(p1,p2, layer, transformation) + set_options(element.options) } + line(points.last, points.first, layer, transformation) + set_options(element.options)
@@ -221,8 +223,9 @@ module DXF
         # Convert a {Sketch} to a DXF file and write it to the given output
         # @param [IO] output    A writable IO-like object
         # @param [Sketch] sketch    The {Sketch} to unparse
-        def unparse(sketch, layers=[1])
-            ([999, 'Design created by Aurora'] + section_start('HEADER', '9' => '$ACADVER', '1' => 'AC1009') + section_end +
+        def unparse(sketch, layers=[1], additional_comments='')
+            comment = "Design created by Aurora\n#{additional_comments}"
+            ([999, comment] + section_start('HEADER', '9' => '$ACADVER', '1' => 'AC1009') + section_end +
             section_start('TABLES') +
                 table_start('LTYPE') + ltype('dashed') + table_end +
                 table_start('LAYER') + set_layers(layers) + table_end +

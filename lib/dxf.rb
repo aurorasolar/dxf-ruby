@@ -12,9 +12,9 @@ Reading and writing of files using AutoCAD's {http://en.wikipedia.org/wiki/AutoC
     # @param [String] filename	The path to write to
     # @param [Sketch] sketch	The {Sketch} to export
     # @param [Symbol] units	Convert all values to the specified units (:inches or :mm)
-    def self.write(sketch, units=:mm, layers)
-	# File.open(filename, 'w') {|f| Unparser.new(units).unparse(f, sketch, layers)}
-    Unparser.new(units).unparse(sketch, layers)
+    def self.write(sketch, units=:mm, layers, comment)
+	    # File.open(filename, 'w') {|f| Unparser.new(units).unparse(f, sk  etch, layers)}
+      Unparser.new(units).unparse(sketch, layers, comment)
     end
 
     # Read a DXF file
