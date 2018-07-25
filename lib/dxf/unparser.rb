@@ -224,8 +224,10 @@ module DXF
         # @param [IO] output    A writable IO-like object
         # @param [Sketch] sketch    The {Sketch} to unparse
         def unparse(sketch, layers=[1], additional_comments='')
-            comment = "Design created by Aurora\n#{additional_comments}"
-            ([999, comment] + section_start('HEADER', '9' => '$ACADVER', '1' => 'AC1009') + section_end +
+            comment = "Design created by Aurora #{additional_comments}"
+            ([999, 'Design created by Aurora'] + [999, additional_comments] +
+            section_start('HEADER', '9' => '$ACADVER', '1' => 'AC1009') +
+            section_end +
             section_start('TABLES') +
                 table_start('LTYPE') + ltype('dashed') + table_end +
                 table_start('LAYER') + set_layers(layers) + table_end +
