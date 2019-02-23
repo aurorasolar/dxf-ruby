@@ -9,8 +9,9 @@ module DXF
 
         # Initialize with a Sketch
         # @param [String,Symbol] units  The units to convert length values to (:inches or :millimeters)
-        def initialize(units=:mm)
+        def initialize(units=:mm, precision = 4)
             @units = units
+            @precision = precision
         end
 
         def to_s
@@ -109,9 +110,9 @@ module DXF
         # @return [String]
         def format_value(value)
             if value.is_a? Units::Numeric
-                "%g" % value.send("to_#{@units}".to_sym)
+                "%.#{@precision}f" % value.send("to_#{@units}".to_sym)
             else
-                "%g" % value
+                "%.#{@precision}f" % value
             end
         end
 
