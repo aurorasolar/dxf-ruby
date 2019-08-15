@@ -3,14 +3,18 @@ require 'sketch'
 require 'units'
 require 'stringio'
 
+# constants
+METRIC = 'metric'
+FEET_CODE = 2
+METERS_CODE = 6
+
 module DXF
     class Unparser
         attr_accessor :container
 
         # Initialize with a Sketch
-        # @param [String,Symbol] units  The units to convert length values to (:inches or :millimeters)
-        def initialize(units=:mm, precision = 4)
-            @units = units
+        # @param [Number] precison	number of decimal places to keep for the practional component
+        def initialize(precision = 4)
             @precision = precision
         end
 
@@ -106,14 +110,10 @@ module DXF
         end
 
     # @group Property Converters
-        # Convert the given value to the correct units and return it as a formatted string
+        # Rounds value
         # @return [String]
         def format_value(value)
-            if value.is_a? Units::Numeric
-                "%.#{@precision}f" % value.send("to_#{@units}".to_sym)
-            else
-                "%.#{@precision}f" % value
-            end
+            "%.#{@precision}f" % value
         end
 
         # Emit the group codes for the center property of an element
@@ -132,14 +132,12 @@ module DXF
             [ 0, 'ENDSEC' ]
         end
 
-        def section_start(name, data={})
-            code = [0, 'SECTION', 2, name]
+        def section_start(name, content = [])
+            [0, 'SECTION', 2, name]
+        end
 
-            if data
-                data.each { |k,v| code.push k, v }
-            end
-
-            code
+        def section_code(name, content = [])
+            section_start(name) + content + section_end
         end
 
         def table_start(name)
@@ -212,17 +210,53 @@ module DXF
             end
         end
 
+        def unit_code(units)
+            units == METRIC ? METERS_CODE : FEET_CODE
+        end
+
+        def title_code
+            start = [999, 'Design created by Aurora']
+        end
+
+        def header_code(units = METRIC)
+            section_code('HEADER', [
+                9, '$ACADVER',
+                1, 'AC1009',
+                9, '$INSUNITS',
+                70, unit_code(units)
+            ])
+        end
+
+        def table_code(layers)
+            section_code('TABLES',
+                table_start('LTYPE') +
+                ltype('dashed') +
+                table_end +
+                table_start('LAYER') +
+                set_layers(layers) +
+                table_end
+            )
+        end
+
+        def entity_code(sketch)
+            section_code('ENTITIES', to_array(sketch))
+        end
+
+        def eof
+          [0, 'EOF']
+        end
+
         # Convert a {Sketch} to a DXF file and write it to the given output
         # @param [IO] output    A writable IO-like object
         # @param [Sketch] sketch    The {Sketch} to unparse
-        def unparse(sketch, layers=[1])
-            ([999, 'Design created by Aurora'] + section_start('HEADER', '9' => '$ACADVER', '1' => 'AC1009') + section_end +
-            section_start('TABLES') +
-                table_start('LTYPE') + ltype('dashed') + table_end +
-                table_start('LAYER') + set_layers(layers) + table_end +
-            section_end +
-            section_start('ENTITIES') + to_array(sketch) + section_end +
-            [0, 'EOF']).join("\r\n")
+        def unparse(sketch, layers=[1], units)
+            (
+                title_code +
+                header_code(units) +
+                table_code(layers) +
+                entity_code(sketch) +
+                eof
+            ).join("\r\n")
         end
     end
 end
