@@ -150,7 +150,7 @@ module DXF
 
         def ltype(name)
             table_entry = [100, 'AcDbLinetypeTableRecord']
-            table_entry += [2, 'LTYPE', 0, 'LTYPE', 2, 'DASHED', 70, 0, 3, '', 72, 65, 73, 1, 40, '0.0'] if name == 'dashed'
+            table_entry += [2, 'LTYPE', 0, 'LTYPE', 2, 'DASHED', 70, 0, 3, 'dashed line', 72, 65, 73, 2, 40, '4.0', 49, '2.0', 49, '-2.0'] if name == 'dashed'
             #   table_entry.concat [2, 'LTYPE', 0, 'LTYPE', 2, 'DASHED', 73, 1]
             #   # table_entry.concat([49, 0.5])
             # end
