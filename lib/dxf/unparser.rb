@@ -35,8 +35,10 @@ module DXF
                 8, layer,
                 10, format_value(first.x),
                 20, format_value(first.y),
+                30, format_value(first.z),
                 11, format_value(last.x),
-                21, format_value(last.y)
+                21, format_value(last.y),
+                31, format_value(last.z)
             ]
         end
     # @endgroup
@@ -60,12 +62,15 @@ module DXF
             # {
             #   10: [x] (x coordinate of a point)
             #   20: [y] (y coordinate of a point)
+            #   30: [z] (z coordinate of a point)
             # }
             for point in points
                 code.push 10
                 code.push point.x
                 code.push 20
                 code.push point.y
+                code.push 30
+                code.push point.z
             end
 
             code
@@ -120,7 +125,7 @@ module DXF
         # @param [Point] point  The center point to format
         def center(point, transformation, options={})
             point = transformation.transform(point) if transformation
-            [ 10, format_value(point.x), 20, format_value(point.y) ]
+            [ 10, format_value(point.x), 20, format_value(point.y), 30, format_value(point.z)]
         end
 
         # Emit the group codes for the radius property of an element
