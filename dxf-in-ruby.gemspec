@@ -10,7 +10,7 @@ Gem::Specification.new do |gem|
   gem.description   = %q{Read and write DXF files using Ruby}
   gem.summary       = %q{Tools for working with the popular DXF file format}
   gem.homepage      = "http://github.com/meseker/dxf-ruby"
-  gem.required_ruby_version = ">= 2.7.5", "< 3.2"
+  gem.required_ruby_version = ">= 2.7.5"
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
