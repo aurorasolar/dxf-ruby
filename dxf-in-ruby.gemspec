@@ -4,13 +4,13 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |gem|
   gem.name          = "dxf-in-ruby"
-  gem.version       = '1.0.1'
+  gem.version       = '1.1.0'
   gem.authors       = ["Brandon Fosdick", "Meseker Yohannes"]
   gem.email         = ["meseker.yohannes@gmail.com"]
   gem.description   = %q{Read and write DXF files using Ruby}
   gem.summary       = %q{Tools for working with the popular DXF file format}
   gem.homepage      = "http://github.com/meseker/dxf-ruby"
-  gem.required_ruby_version = ">= 2.7.5"
+  gem.required_ruby_version = ">= 2.0"
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
